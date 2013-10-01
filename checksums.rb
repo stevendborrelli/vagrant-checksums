@@ -19,12 +19,17 @@ class ChecksumCLI
         :long => "--quiet",
         :short => "-q",
         :description => "Suppresses unneeded output"
+
+    option :url,
+        :long => "--url",
+        :sort => "-u",
+        :default => "http://downloads.vagrantup.com",
+        :description => "Base url"
 end
 
 cli = ChecksumCLI.new
 cli.parse_options
 
-url = "http://downloads.vagrantup.com"
 tags = []
 
 def get_all_tags(url)
@@ -57,9 +62,9 @@ def get_all_tags
 end
 
 if cli.config[:tags]
-    get_checksums_for_tag(url, cli.config[:tags])
+    get_checksums_for_tag(cli.config[:url], cli.config[:tags])
 else
-    tags = get_all_tags(url)
+    tags = get_all_tags(cli.config[:url])
     if ! cli.config[:quiet] 
         puts 'Available Versions:'
     end 
