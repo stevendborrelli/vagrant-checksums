@@ -14,6 +14,11 @@ class ChecksumCLI
     option :tags,
         :long => "--tags TAGS",
         :short => "-c TAGS"
+
+    option :quiet,
+        :long => "--quiet",
+        :short => "-q",
+        :description => "Suppresses unneeded output"
 end
 
 cli = ChecksumCLI.new
@@ -32,13 +37,9 @@ def get_all_tags(url)
     return tags
 end
 
-if cli.config[:tags]
-    puts cli.config[:tags]
-else
-    tags = get_all_tags(url)
-    puts JSON.pretty_generate(tags)
+def get_checksums_for_tag(url, tag)
+    get_pkg_links(url + '/tags/' + tag) 
 end
-
 
 def get_pkg_links(url)
     puts url
@@ -54,3 +55,14 @@ def get_all_tags
         get_pkg_links(url + '/tags/' + tag)
     end
 end
+
+if cli.config[:tags]
+    get_checksums_for_tag(url, cli.config[:tags])
+else
+    tags = get_all_tags(url)
+    if ! cli.config[:quiet] 
+        puts 'Available Versions:'
+    end 
+    puts tags.join(" ")
+end
+
