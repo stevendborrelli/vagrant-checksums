@@ -11,9 +11,16 @@ class ChecksumCLI
     
     banner "Generate Checksums for vagrant installable images"
 
+    option :cachedir,
+        :long => "--cachedir DIR",
+        :short => "-d DIR",
+        :default => "cache",
+        :description => "Where to cache install files"
+
     option :tags,
         :long => "--tags TAGS",
-        :short => "-c TAGS"
+        :short => "-t TAGS",
+        :description => "Versions to checksum"
 
     option :quiet,
         :long => "--quiet",
@@ -52,13 +59,6 @@ def get_pkg_links(url)
     doc.css('a.file').each do |file|
       puts file.attr('href')
    end
-end
-
-def get_all_tags
-    tags.each do |tag|
-        puts "tag: " + tag
-        get_pkg_links(url + '/tags/' + tag)
-    end
 end
 
 if cli.config[:tags]
