@@ -89,19 +89,43 @@ def checksum_file(file)
   return hashes
 end
 
+def get_os(filename)
+    d = {}
+    d["type"] =  File.extname(filename).tr('.', '')
+
+    case d["type"]
+        when "deb"
+            d["os"] = "debian"
+        when "dmg"
+            d["os"] = "osx"
+        when "msi"
+            d["os"] = "windows"
+        when "rpm"
+            d["os"] = "rhel"
+        else
+            d["os"] = "unknown"
+        end
+    return d
+end
+
 data = {}
 
 if cli.config[:tags]
     get_pkg_links(cli.config[:url] + '/tags/', cli.config[:tags]).each do |link|
         filepath = URI::parse(link).path
+        filename = File::basename(filepath)
+        extname = File.extname(filepath).tr('.', '')
         fullpath = File.join(cli.config[:cachedir], cli.config[:tags], filepath)
         if check_cache(fullpath)
-            puts File::basename(filepath) + " already downloaded. Skipping..."
+            puts filename + " already downloaded. Skipping..."
         else
             download_file(link, fullpath)
         end
-        data[:tags] = checksum_file(fullpath)
-        puts data.to_json 
+        data["url"] = link
+        data["filename"] = filename
+        data.update(get_os(filename))
+        data.update(checksum_file(fullpath))
+        puts JSON.pretty_generate(data)
     end
 else
     tags = get_all_tags(cli.config[:url])
