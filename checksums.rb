@@ -1,9 +1,12 @@
 #!/usr/bin/env ruby 
 
+require 'fileutils'
 require 'json'
 require 'nokogiri'
 require 'open-uri'
 require 'mixlib/cli'
+require 'pathname'
+require 'uri'
 
 
 class ChecksumCLI
@@ -50,19 +53,43 @@ def get_all_tags(url)
 end
 
 def get_checksums_for_tag(url, tag)
-    get_pkg_links(url + '/tags/' + tag) 
+    return get_pkg_links(url + '/tags/', tag)
 end
 
-def get_pkg_links(url)
+
+def get_pkg_links(url,tag)
+    t = []
     puts url
-    doc = Nokogiri::HTML(open(url))
+    doc = Nokogiri::HTML(open(url + tag))
     doc.css('a.file').each do |file|
-      puts file.attr('href')
+        t.push(file.attr('href'))
    end
+   return t
 end
+
+def create_dir(dir)
+   puts "make dir"
+end
+
+def check_cache(filename)
+   return File.exist?(filename)
+end
+
+def download_file(url, targetfile)
+    puts targetfile
+    Dir.exists?(targetfile) || FileUtils.mkpath(File::dirname(targetfile))
+    puts URI::parse(url).path
+end
+
 
 if cli.config[:tags]
-    get_checksums_for_tag(cli.config[:url], cli.config[:tags])
+    get_pkg_links(cli.config[:url] + '/tags/', cli.config[:tags]).each do |link|
+        #puts link
+        filepath = URI::parse(link).path
+        #puts filepath
+        fullpath = File.join(cli.config[:cachedir], cli.config[:tags], filepath)
+        download_file(link, fullpath) unless check_cache(fullpath)
+    end
 else
     tags = get_all_tags(cli.config[:url])
     if ! cli.config[:quiet] 
