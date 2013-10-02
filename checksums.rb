@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby 
 
+require 'digest'
 require 'fileutils'
 require 'json'
 require 'nokogiri'
@@ -79,6 +80,17 @@ def download_file(url, targetfile)
     end
 end
 
+def checksum_file(file)
+  hashes = {}
+  hashes["md5"] =  Digest::MD5.file(file).hexdigest
+  hashes["sha1"] = Digest::SHA1.file(file).hexdigest
+  hashes["sha256"] = Digest::SHA256.file(file).hexdigest
+
+  return hashes
+end
+
+data = {}
+
 if cli.config[:tags]
     get_pkg_links(cli.config[:url] + '/tags/', cli.config[:tags]).each do |link|
         filepath = URI::parse(link).path
@@ -88,6 +100,8 @@ if cli.config[:tags]
         else
             download_file(link, fullpath)
         end
+        data[:tags] = checksum_file(fullpath)
+        puts data.to_json 
     end
 else
     tags = get_all_tags(cli.config[:url])
@@ -96,4 +110,5 @@ else
     end 
     puts tags.join(" ")
 end
+
 
