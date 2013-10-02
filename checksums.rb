@@ -108,9 +108,9 @@ def get_os(filename)
     return d
 end
 
-data = {}
 
 if cli.config[:tags]
+    data = { "vagrant" =>  { "version" =>  cli.config[:tags], "files" => [] } } 
     get_pkg_links(cli.config[:url] + '/tags/', cli.config[:tags]).each do |link|
         filepath = URI::parse(link).path
         filename = File::basename(filepath)
@@ -121,12 +121,14 @@ if cli.config[:tags]
         else
             download_file(link, fullpath)
         end
-        data["url"] = link
-        data["filename"] = filename
-        data.update(get_os(filename))
-        data.update(checksum_file(fullpath))
-        puts JSON.pretty_generate(data)
+        h = {} 
+        h["url"] = link
+        h["filename"] = filename
+        h.update(get_os(filename))
+        h.update(checksum_file(fullpath))
+        data["vagrant"]["files"].push(h)
     end
+    puts JSON.pretty_generate(data)
 else
     tags = get_all_tags(cli.config[:url])
     if ! cli.config[:quiet] 
