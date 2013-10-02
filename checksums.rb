@@ -108,6 +108,13 @@ def get_os(filename)
     return d
 end
 
+def print_vagrant_attr(hash)
+    hash["vagrant"]["files"].each do |h|
+        puts "default[\'vagrant\'][\'url\'][\'#{h["os"]}\']  = #{h['url']}\n"
+        puts "default[\'vagrant\'][\'checksum\'][\'#{h["os"]}\']  = #{h['sha256']}\n"
+    end 
+
+end
 
 if cli.config[:tags]
     data = { "vagrant" =>  { "version" =>  cli.config[:tags], "files" => [] } } 
@@ -128,7 +135,8 @@ if cli.config[:tags]
         h.update(checksum_file(fullpath))
         data["vagrant"]["files"].push(h)
     end
-    puts JSON.pretty_generate(data)
+    #puts JSON.pretty_generate(data)
+    print_vagrant_attr(data)
 else
     tags = get_all_tags(cli.config[:url])
     if ! cli.config[:quiet] 
