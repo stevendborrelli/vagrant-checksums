@@ -67,28 +67,27 @@ def get_pkg_links(url,tag)
    return t
 end
 
-def create_dir(dir)
-   puts "make dir"
-end
-
 def check_cache(filename)
    return File.exist?(filename)
 end
 
 def download_file(url, targetfile)
-    puts targetfile
-    Dir.exists?(targetfile) || FileUtils.mkpath(File::dirname(targetfile))
-    puts URI::parse(url).path
+    Dir.exists?(File::dirname(targetfile)) || FileUtils.mkpath(File::dirname(targetfile))
+    puts "Downloading:  " +  url
+    open(targetfile, 'wb') do |file|
+        file << open(url).read
+    end
 end
-
 
 if cli.config[:tags]
     get_pkg_links(cli.config[:url] + '/tags/', cli.config[:tags]).each do |link|
-        #puts link
         filepath = URI::parse(link).path
-        #puts filepath
         fullpath = File.join(cli.config[:cachedir], cli.config[:tags], filepath)
-        download_file(link, fullpath) unless check_cache(fullpath)
+        if check_cache(fullpath)
+            puts File::basename(filepath) + " already downloaded. Skipping..."
+        else
+            download_file(link, fullpath)
+        end
     end
 else
     tags = get_all_tags(cli.config[:url])
