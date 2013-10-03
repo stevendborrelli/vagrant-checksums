@@ -35,7 +35,7 @@ class ChecksumCLI
         :long => "--url",
         :sort => "-u",
         :default => "http://downloads.vagrantup.com",
-        :description => "Base url"
+        :description => "Base url default(http://downloads.vagrantup.com)"
 end
 
 cli = ChecksumCLI.new
@@ -60,7 +60,6 @@ end
 
 def get_pkg_links(url,tag)
     t = []
-    puts url
     doc = Nokogiri::HTML(open(url + tag))
     doc.css('a.file').each do |file|
         t.push(file.attr('href'))
