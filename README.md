@@ -23,7 +23,6 @@ v1.3.4 v1.3.3 v1.3.2 v1.3.1 v1.3.0 v1.2.7 v1.2.6 v1.2.5 v1.2.4 v1.2.3 v1.2.2 v1.
 
 ```
 
-
 Getting the checksums for a version:
 
 ```
@@ -50,9 +49,13 @@ default['vagrant']['checksum']['rhel']  = "ab96ce14e0457deb9b6c2af84333bfa4a4981
 
 ```
 
+Requirements
+===========
+* Ruby 1.9.x
+* nokogiri gem 
 
 License
 =======
 
-Steven Borrelli (c) 2013 
-Released under the MIT 
+Steven Borrelli (c) 2013
+Released under the MIT license
