@@ -110,8 +110,8 @@ end
 
 def print_vagrant_attr(hash)
     hash["vagrant"]["files"].each do |h|
-        puts "default[\'vagrant\'][\'url\'][\'#{h["os"]}\']  = #{h['url']}\n"
-        puts "default[\'vagrant\'][\'checksum\'][\'#{h["os"]}\']  = #{h['sha256']}\n"
+        puts "default[\'vagrant\'][\'url\'][\'#{h["os"]}\']  = \"#{h['url']}\"\n"
+        puts "default[\'vagrant\'][\'checksum\'][\'#{h["os"]}\']  = \"#{h['sha256']}\"\n"
     end 
 
 end
